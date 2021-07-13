@@ -34,7 +34,7 @@ def run_exps(X_train: pd.DataFrame , y_train: pd.DataFrame, X_test: pd.DataFrame
     
     dfs = []
     models = [
-          ('LogReg', LogisticRegression()), 
+          ('LogReg', LogisticRegression(solver='liblinear')), 
           ('RF', RandomForestClassifier()),
           ('KNN', KNeighborsClassifier()),
           ('SVM', SVC()), 
@@ -66,4 +66,48 @@ def run_exps(X_train: pd.DataFrame , y_train: pd.DataFrame, X_test: pd.DataFrame
         final = pd.concat(dfs, ignore_index=True)
         
     return final
+
+final = run_exps(X_train, y_train, X_test, y_test)
+
+#Empirical bootstrapping
+bootstraps = []
+
+for model in list(set(final.model.values)):
+    model_df = final.loc[final.model == model]
+    #30 Samples
+    bootstrap = model_df.sample(n=30, replace=True)
+    bootstraps.append(bootstrap)
+        
+bootstrap_df = pd.concat(bootstraps, ignore_index=True)
+results_long = pd.melt(bootstrap_df, id_vars=['model'], var_name='metrics', value_name='values')
+
+time_metrics = ['fit_time','score_time'] # fit time metrics
+
+## PERFORMANCE METRICS
+results_long_nofit = results_long.loc[~results_long['metrics'].isin(time_metrics)] # get df without fit data
+results_long_nofit = results_long_nofit.sort_values(by='values')
+
+## TIME METRICS
+results_long_fit = results_long.loc[results_long['metrics'].isin(time_metrics)] # df with fit data
+results_long_fit = results_long_fit.sort_values(by='values')
+
+#Plot performance metrics obtained from the 5 fold cross validation
+import matplotlib.pyplot as plt
+import seaborn as sns
+plt.figure(figsize=(20, 12))
+sns.set(font_scale=2.5)
+g = sns.boxplot(x="model", y="values", hue="metrics", data=results_long_nofit, palette="Set3")
+plt.legend(bbox_to_anchor=(1.05, 1), loc=2, borderaxespad=0.)
+plt.title('Comparison of Model by Classification Metric')
+plt.savefig('./benchmark_models_performance.png',dpi=300)
+
+
+#Plot training times and scoring times
+plt.figure(figsize=(20, 12))
+sns.set(font_scale=2.5)
+g = sns.boxplot(x="model", y="values", hue="metrics", data=results_long_fit, palette="Set3")
+plt.legend(bbox_to_anchor=(1.05, 1), loc=2, borderaxespad=0.)
+plt.title('Comparison of Model by Fit and Score Time')
+plt.savefig('./benchmark_models_time.png',dpi=300)
+
 
