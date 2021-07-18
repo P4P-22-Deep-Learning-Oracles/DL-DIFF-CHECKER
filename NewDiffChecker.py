@@ -23,17 +23,17 @@ scoring = ['accuracy', 'precision_weighted', 'recall_weighted', 'f1_weighted', '
 target_names = ['malignant', 'benign']
 results = []
 
-def run_exps(X_train: pd.DataFrame , y_train: pd.DataFrame, X_test: pd.DataFrame, y_test: pd.DataFrame, model) -> pd.DataFrame:
+def DIFF_CHECKER(X_train: pd.DataFrame , y_train: pd.DataFrame, X_test: pd.DataFrame, y_test: pd.DataFrame, DNNF, DNNC) -> pd.DataFrame:
      kfold = model_selection.KFold(n_splits=5, shuffle=True, random_state=90210)
-     cv_results = model_selection.cross_validate(model, X_train, y_train, cv=kfold, scoring=scoring)
-     clf = model.fit(X_train, y_train)
+     cv_results = model_selection.cross_validate(DNNF, X_train, y_train, cv=kfold, scoring=scoring)
+     clf = DNNF.fit(X_train, y_train)
      y_pred = clf.predict(X_test)
         
-     print(model)
+     print("DNNF")
      print(classification_report(y_test, y_pred, target_names=target_names))
      
      results.append(cv_results)
      
      return results
 
-run_exps(X_train, y_train, X_test, y_test, model1)
+DIFF_CHECKER(X_train, y_train, X_test, y_test, model1, model2)
