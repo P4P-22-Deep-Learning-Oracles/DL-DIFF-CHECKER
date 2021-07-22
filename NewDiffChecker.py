@@ -67,4 +67,4 @@ def DIFF_CHECKER(X_train: pd.DataFrame , y_train: pd.DataFrame, X_test: pd.DataF
      
       return results
 
-DIFF_CHECKER(X_train, y_train, X_test, y_test, estimator, estimator2)
+DIFF_CHECKER(X_train, y_train, X_test, y_test, estimator2, estimator)
