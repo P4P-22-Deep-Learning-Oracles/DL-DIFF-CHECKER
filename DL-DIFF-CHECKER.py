@@ -8,9 +8,6 @@ from keras.layers import Input
 from keras_preprocessing import image
 from keras import backend as K
 import numpy as np
-from sklearn import cross_validation
-from sklearn.metrics import accuracy_score, confusion_matrix
-from sklearn.svm import SVC, LinearSVC
 
 
 from Util import *
